@@ -1,1 +1,13 @@
 GET http://localhost:3000/customer?limit=10&page=1&searchQuery=asd
+
+###
+
+POST http://localhost:3000/customer/save
+Content-Type: application/json
+
+{
+    "firstName": "Jorge Henrique",
+    "lastName": "Frasson",
+    "email": "jorge.frasson147@gmail.com",
+    "phone": "5527999045823"
+}
