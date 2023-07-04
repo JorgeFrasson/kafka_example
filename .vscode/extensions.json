@@ -1,0 +1,11 @@
+{
+    "recommendations": [
+        "angular.ng-template",
+        "ryanluker.vscode-coverage-gutters",
+        "ms-azuretools.vscode-docker",
+        "mhutchie.git-graph",
+        "eamodio.gitlens",
+        "ms-vscode-remote.vscode-remote-extensionpack",
+        "humao.rest-client"
+    ]
+}

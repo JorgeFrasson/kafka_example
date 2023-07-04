@@ -1,0 +1,38 @@
+version: "3.7"
+
+services:
+  # database:
+  #   build:
+  #     context: ./database
+  #   ports:
+  #     - "5434:5432"
+  #   networks:
+  #     - application_net
+  #   env_file:
+  #     - ./database/dev.env
+  #   volumes:
+  #     - database-volume:/var/lib/postgresql/data
+
+  growth-core:
+    build:
+      context: ./back/growth-core
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+      - "5858:5858"
+    networks:
+      - application_net
+    # depends_on:
+    #   - database
+    env_file: ./back/growth-core/.env/dev.env
+    volumes:
+      - ./back/growth-core:/home/node/
+      - growth-core-volume:/home/node/node_modules
+    
+volumes:
+  database-volume:
+  growth-core-volume:
+
+networks:
+  application_net:
+    driver: bridge

@@ -1,0 +1,28 @@
+version: "3.7"
+services:
+
+  kafka:
+    # image: "meuchope/kafka"
+    restart: unless-stopped
+    build:
+      context: ./containers/kafka
+      dockerfile: Dockerfile.build
+    env_file: ./containers/.env/kafka/kafka.env
+    networks:
+      - zap_kafka_net
+  
+  # kafdrop:
+  #   image: obsidiandynamics/kafdrop:latest
+  #   restart: unless-stopped
+  #   networks:
+  #     - zap_kafka_net
+  #   depends_on:
+  #     - kafka
+  #   ports:
+  #     - 29000:9000
+  #   environment:
+  #     KAFKA_BROKERCONNECT: kafka:9092
+
+networks:
+  zap_kafka_net:
+    driver: bridge
