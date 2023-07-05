@@ -5,7 +5,7 @@ __consumer_offsets 30 0
 __consumer_offsets 8 0
 __consumer_offsets 21 0
 __consumer_offsets 4 0
-cart-abandoned 0 32
+cart-abandoned 0 41
 __consumer_offsets 27 0
 __consumer_offsets 7 0
 __consumer_offsets 9 0
@@ -31,11 +31,11 @@ __consumer_offsets 38 0
 __consumer_offsets 17 0
 __consumer_offsets 48 0
 __confluent.support.metrics 0 0
-__consumer_offsets 19 0
+__consumer_offsets 19 9
 __consumer_offsets 11 0
 __consumer_offsets 13 0
 __consumer_offsets 2 0
-__consumer_offsets 43 54
+__consumer_offsets 43 82
 __consumer_offsets 6 0
 __consumer_offsets 14 0
 __consumer_offsets 20 0

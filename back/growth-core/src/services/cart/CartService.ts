@@ -1,42 +1,39 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 import { ICartService, SaveAbandonedCartRequest } from './ICartService';
 import { Opportunity } from 'src/models/Opportunity';
 import { OpportunityRepository } from 'src/repositories/OpportunityRepository';
 import AppError from 'src/shared/errors/AppError';
+import { ClientKafka } from '@nestjs/microservices';
 
 @Injectable()
 export class CartService implements ICartService {
-  constructor(private readonly opportunityRepository: OpportunityRepository) {}
+  constructor(
+    private readonly opportunityRepository: OpportunityRepository,
+    @Inject('CART_SERVICE')
+    private readonly kafkaClient: ClientKafka,
+  ) {}
 
-  async saveAbandonedCart(
-    request: SaveAbandonedCartRequest,
-  ): Promise<Opportunity | AppError> {
+  async saveAbandonedCart(request: SaveAbandonedCartRequest): Promise<any> {
     try {
-      const opportunity = new Opportunity();
-
+      Logger.log(`Carrinho abandonado recebido`, `Cart Service`);
       if (!request.customer) {
         return new AppError({
           title: 'Desculpe!',
           message: 'Encontramos um erro ao tentar salvar uma oportunidade',
         });
       }
+      Logger.log(`Enviando mesagem de carrinho abandonado`, `Cart Service`);
 
-      opportunity.customer = request.customer;
-      opportunity.items = request.items;
-      opportunity.customerId = request.customer.id;
+      await this.kafkaClient.emit('cart-abandoned', request);
 
-      const response = await this.opportunityRepository.saveOpportunity(
-        opportunity,
-      );
-
-      return response;
+      return true;
     } catch (error) {
       if (error instanceof AppError) {
-        Logger.error(error.message, `[Cart Service]`);
+        Logger.error(error.message, `Cart Service`);
         return error;
       }
 
-      Logger.error(error, `[Cart Service]`);
+      Logger.error(error, `Cart Service`);
       return new AppError({
         title: 'Desculpe!',
         message: 'Encontramos um erro ao tentar salvar uma oportunidade',

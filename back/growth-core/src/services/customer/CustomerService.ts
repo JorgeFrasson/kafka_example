@@ -25,7 +25,10 @@ export class CustomerService implements ICustomerService {
   }
 
   async saveCustomer(request: SaveCustomerRequest): Promise<Customer> {
-    Logger.log(`Cadastrando usuário ${request.firstName} ${request.lastName}`);
+    Logger.log(
+      `Cadastrando usuário ${request.firstName} ${request.lastName}`,
+      `Customer Service`,
+    );
 
     const customer = new Customer();
 

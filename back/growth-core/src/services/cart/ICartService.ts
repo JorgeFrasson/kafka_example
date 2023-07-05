@@ -3,9 +3,7 @@ import { Opportunity } from 'src/models/Opportunity';
 import AppError from 'src/shared/errors/AppError';
 
 export interface ICartService {
-  saveAbandonedCart(
-    request: SaveAbandonedCartRequest,
-  ): Promise<Opportunity | AppError>;
+  saveAbandonedCart(request: SaveAbandonedCartRequest): Promise<any>;
 }
 
 export class CartItem {

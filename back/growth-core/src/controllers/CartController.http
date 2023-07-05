@@ -1,0 +1,20 @@
+POST http://localhost:3000/cart/save/abandoned
+Content-Type: application/json
+
+{
+    "id": 53,
+    "customer": {
+        "id": 1,
+        "firstName": "Jorge Henrique",
+        "lastName": "Frasson",
+        "email": "jorge.frasson147@gmail.com",
+        "phone": "5527999045823"
+    },
+    "items": [
+        {
+            "id": 1,
+            "name": "Product 1",
+            "quantity": 1
+        }
+    ]
+}

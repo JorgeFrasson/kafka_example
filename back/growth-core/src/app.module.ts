@@ -11,9 +11,24 @@ import { CustomerService } from './services/customer/CustomerService';
 import { CartController } from './controllers/CartController';
 import { CartService } from './services/cart/CartService';
 import { OpportunityRepository } from './repositories/OpportunityRepository';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { OpportunityService } from './services/opportunity/OpportunityService';
+import { OpportunityController } from './controllers/OpportunityController';
 @Module({
   imports: [
     ConfigModule.forRoot({ envFilePath: `.env/${process.env.NODE_ENV}.env` }),
+    ClientsModule.register([
+      {
+        name: 'CART_SERVICE',
+        transport: Transport.KAFKA,
+        options: {
+          client: {
+            clientId: 'cart-consumer',
+            brokers: [process.env.KAFKA_BROKER],
+          },
+        },
+      },
+    ]),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST,
@@ -30,6 +45,7 @@ import { OpportunityRepository } from './repositories/OpportunityRepository';
     MessageController,
     CustomerController,
     CartController,
+    OpportunityController,
   ],
   providers: [
     AppService,
@@ -38,6 +54,7 @@ import { OpportunityRepository } from './repositories/OpportunityRepository';
     CustomerService,
     CartService,
     OpportunityRepository,
+    OpportunityService,
   ],
 })
 export class AppModule {}
