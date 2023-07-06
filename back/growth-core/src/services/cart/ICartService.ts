@@ -1,6 +1,4 @@
 import { Customer } from 'src/models/Customer';
-import { Opportunity } from 'src/models/Opportunity';
-import AppError from 'src/shared/errors/AppError';
 
 export interface ICartService {
   saveAbandonedCart(request: SaveAbandonedCartRequest): Promise<any>;
