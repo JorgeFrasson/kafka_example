@@ -1,17 +1,17 @@
 version: "3.7"
 
 services:
-  # database:
-  #   build:
-  #     context: ./database
-  #   ports:
-  #     - "5434:5432"
-  #   networks:
-  #     - application_net
-  #   env_file:
-  #     - ./database/dev.env
-  #   volumes:
-  #     - database-volume:/var/lib/postgresql/data
+  database:
+    build:
+      context: ./database
+    ports:
+      - "5434:5432"
+    networks:
+      - application_net
+    env_file:
+      - ./database/dev.env
+    volumes:
+      - database-volume:/var/lib/postgresql/data
 
   growth-core:
     build:
@@ -22,17 +22,67 @@ services:
       - "5858:5858"
     networks:
       - application_net
-    # depends_on:
-    #   - database
+      - kafka_network
+    depends_on:
+      - database
+      - kafka1
     env_file: ./back/growth-core/.env/dev.env
     volumes:
-      - ./back/growth-core:/home/node/
+      - ./back/growth-core/src:/app/src
       - growth-core-volume:/home/node/node_modules
-    
+
+  zookeeper:
+    image: zookeeper:3.4.9
+    hostname: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOO_MY_ID: 1
+      ZOO_PORT: 2181
+      ZOO_SERVERS: server.1=zookeeper:2888:3888
+    volumes:
+      - ./data/zookeeper/data:/data
+      - ./data/zookeeper/datalog:/datalog
+    networks:
+      - kafka_network
+  kafka1:
+    image: confluentinc/cp-kafka:5.3.0
+    hostname: kafka1
+    ports:
+      - "9091:9091"
+    environment:
+      KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:9092,LISTENER_DOCKER_EXTERNAL://localhost:9091
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:9092,LISTENER_DOCKER_EXTERNAL://localhost:9091
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_BROKER_ID: 1
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    volumes:
+      - ./data/kafka1/data:/var/lib/kafka/data
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka_network
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    restart: "no"
+    ports:
+      - "9000:9000"
+    environment:
+      KAFKA_BROKERCONNECT: "kafka1:9092"
+    depends_on:
+      - kafka1
+    networks:
+      - kafka_network
+
 volumes:
   database-volume:
   growth-core-volume:
 
+
 networks:
   application_net:
+    driver: bridge
+  kafka_network:
     driver: bridge
