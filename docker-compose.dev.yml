@@ -25,7 +25,7 @@ services:
       - kafka_network
     depends_on:
       - database
-      - kafka1
+      - kafka
     env_file: ./back/growth-core/.env/dev.env
     volumes:
       - ./back/growth-core/src:/app/src
@@ -40,39 +40,54 @@ services:
       ZOO_MY_ID: 1
       ZOO_PORT: 2181
       ZOO_SERVERS: server.1=zookeeper:2888:3888
-    volumes:
-      - ./data/zookeeper/data:/data
-      - ./data/zookeeper/datalog:/datalog
     networks:
       - kafka_network
-  kafka1:
+  kafka:
     image: confluentinc/cp-kafka:5.3.0
-    hostname: kafka1
+    hostname: kafka
     ports:
       - "9091:9091"
     environment:
-      KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:9092,LISTENER_DOCKER_EXTERNAL://localhost:9091
-      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka1:9092,LISTENER_DOCKER_EXTERNAL://localhost:9091
+      KAFKA_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:9092,LISTENER_DOCKER_EXTERNAL://localhost:9091
+      KAFKA_ADVERTISED_LISTENERS: LISTENER_DOCKER_INTERNAL://kafka:9092,LISTENER_DOCKER_EXTERNAL://localhost:9091
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: LISTENER_DOCKER_INTERNAL:PLAINTEXT,LISTENER_DOCKER_EXTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: LISTENER_DOCKER_INTERNAL
       KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
       KAFKA_BROKER_ID: 1
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    volumes:
-      - ./data/kafka1/data:/var/lib/kafka/data
     depends_on:
       - zookeeper
     networks:
       - kafka_network
+
+  init-kafka:
+    image: confluentinc/cp-kafka:6.1.1
+    depends_on:
+      - kafka
+    entrypoint: [ '/bin/sh', '-c' ]
+    command: |
+      "
+      # blocks until kafka is reachable
+      kafka-topics --bootstrap-server kafka:9092 --list
+
+      echo -e 'Creating kafka topics'
+      kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic cart-abandoned --replication-factor 1 --partitions 1
+
+      echo -e 'Successfully created the following topics:'
+      kafka-topics --bootstrap-server kafka:9092 --list
+      "
+    networks:
+      - kafka_network
+
   kafdrop:
     image: obsidiandynamics/kafdrop
     restart: "no"
     ports:
       - "9000:9000"
     environment:
-      KAFKA_BROKERCONNECT: "kafka1:9092"
+      KAFKA_BROKERCONNECT: "kafka:9092"
     depends_on:
-      - kafka1
+      - kafka
     networks:
       - kafka_network
 

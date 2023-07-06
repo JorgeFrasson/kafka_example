@@ -1,0 +1,9 @@
+{
+    "name": "kafka_example",
+    "scripts": {
+        "start": "docker compose -f docker-compose.dev.yml up --build"
+    },
+    "workspaces": [
+        "./back/growth-core"
+    ]
+}
