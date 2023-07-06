@@ -1,20 +1,15 @@
-import { Controller, Logger } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { SaveOpportunityRequest } from 'src/services/opportunity/IOpportunityService';
+import { Controller, Get, Query } from '@nestjs/common';
 import { OpportunityService } from 'src/services/opportunity/OpportunityService';
 
-@Controller()
+@Controller('opportunity')
 export class OpportunityController {
   constructor(private readonly opportunityService: OpportunityService) {}
 
-  @MessagePattern('cart-abandoned')
-  async saveOpportunity(@Payload() request: SaveOpportunityRequest) {
-    Logger.log(
-      'Mensagem de carrinho abandonado recebida!',
-      'Opportunity Controller',
+  @Get()
+  async getAll(@Query() query: any) {
+    const response = await this.opportunityService.findByOrganization(
+      query.organizationId,
     );
-
-    const response = await this.opportunityService.saveOpportunity(request);
 
     return response;
   }

@@ -1,6 +1,6 @@
 FROM node:18
 
-WORKDIR /node/src/app
+WORKDIR /app
 
 COPY package*.json ./
 
@@ -12,4 +12,4 @@ RUN npm run build
 
 EXPOSE 8080
 
-CMD ["node", "dist/main"]
+CMD ["npm", "run", "start:dev"]

@@ -22,4 +22,7 @@ export class Opportunity {
 
   @Column('json')
   items: CartItem[];
+
+  @Column({ name: 'organization_id' })
+  organizationId: number;
 }

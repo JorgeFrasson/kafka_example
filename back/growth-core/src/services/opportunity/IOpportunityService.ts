@@ -7,9 +7,12 @@ export interface IOpportunityService {
   saveOpportunity(
     request: SaveOpportunityRequest,
   ): Promise<Opportunity | AppError>;
+
+  findByOrganization(organizationId: number): Promise<Opportunity[] | AppError>;
 }
 
 export class SaveOpportunityRequest {
   customer: Customer;
   items: CartItem[];
+  organizationId: number;
 }

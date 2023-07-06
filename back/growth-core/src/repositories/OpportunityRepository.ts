@@ -12,4 +12,13 @@ export class OpportunityRepository extends Repository<Opportunity> {
 
     return opportunityDB;
   }
+  async findByOrganization(organizationId: number) {
+    const opportunities = this.find({
+      where: {
+        organizationId: organizationId,
+      },
+    });
+
+    return opportunities;
+  }
 }

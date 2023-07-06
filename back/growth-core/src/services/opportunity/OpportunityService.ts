@@ -11,6 +11,29 @@ import { OpportunityRepository } from 'src/repositories/OpportunityRepository';
 export class OpportunityService implements IOpportunityService {
   constructor(private readonly opportunityRepository: OpportunityRepository) {}
 
+  async findByOrganization(
+    organizationId: number,
+  ): Promise<Opportunity[] | AppError> {
+    try {
+      const opportunities = await this.opportunityRepository.findByOrganization(
+        organizationId,
+      );
+
+      return opportunities;
+    } catch (error) {
+      if (error instanceof AppError) {
+        Logger.error(error.message, `Opportunity Service`);
+        return error;
+      }
+
+      Logger.error(error, `Opportunity Service`);
+      return new AppError({
+        title: 'Desculpe!',
+        message: 'Encontramos um erro ao tentar listar as oportunidades',
+      });
+    }
+  }
+
   async saveOpportunity(
     request: SaveOpportunityRequest,
   ): Promise<Opportunity | AppError> {
@@ -27,6 +50,7 @@ export class OpportunityService implements IOpportunityService {
       opportunity.customer = request.customer;
       opportunity.items = request.items;
       opportunity.customerId = request.customer.id;
+      opportunity.organizationId = request.organizationId;
 
       Logger.log(
         `Salvando oportunidade ${JSON.stringify(opportunity)}`,
